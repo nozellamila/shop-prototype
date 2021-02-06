@@ -1,9 +1,35 @@
 package com.shopprototype.resources;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.shopprototype.domain.User;
+import com.shopprototype.services.UserService;
+import com.shopprototype.views.UserView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("/users")
 public class UserResource {
+
+    @Autowired
+    private UserService userService;
+
+    @GetMapping
+    public ResponseEntity<Page<UserView>> getUser(@RequestParam(name = "id", required = false) Integer id,
+                                                  @RequestParam(name = "name", required = false) String name,
+                                                  @RequestParam(name = "email", required = false) String email,
+                                                  @RequestParam(name = "admin", required = false) Boolean admin,
+                                                  Pageable pageable){
+        return userService.getUser(id, name, email, admin, pageable);
+    }
+
+
+    @RequestMapping(value="/{id}", method = RequestMethod.GET)
+    public ResponseEntity<?> find(@PathVariable Integer id){
+        User obj = userService.find(id);
+        return ResponseEntity.ok().body(obj);
+    }
 }

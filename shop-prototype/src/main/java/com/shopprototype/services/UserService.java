@@ -62,20 +62,24 @@ public class UserService {
         }
     }
 
-    public ResponseEntity<UserView> putUser(Integer id, UserForm userForm) {
+    public ResponseEntity<UserView> putUser(Integer id, UserForm userForm) throws ServiceException {
         Optional<User> user = userRepository.findById(id);
+        User userByEmail = userRepository.findByEmail(userForm.getEmail());
 
         if(!user.isPresent())
             throw new ObjectNotFoundException("Usuário não encontrado");
-        else {
-            User userFound = user.get();
-            userFound.setName(userForm.getName());
-            userFound.setEmail(userForm.getEmail());
-            userFound.setPassword(userForm.getPassword());
-            userFound.setAdmin(userForm.getAdmin());
+        if(user.isPresent() && userByEmail != null)
+            if(user.get().getId() != userByEmail.getId())
+                throw new ServiceException("Usuário já cadastrado com o e-mail: " + userByEmail.getEmail());
 
-            return ResponseEntity.ok(new UserView(userFound));
-        }
+        User userFound;
+        userFound = user.get();
+        userFound.setName(userForm.getName());
+        userFound.setEmail(userForm.getEmail());
+        userFound.setPassword(userForm.getPassword());
+        userFound.setAdmin(userForm.getAdmin());
+
+        return ResponseEntity.ok(new UserView(userFound));
     }
 
     public ResponseEntity<UserMessage> deleteUser(Integer id) throws ServiceException {

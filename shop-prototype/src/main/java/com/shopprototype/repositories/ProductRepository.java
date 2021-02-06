@@ -21,4 +21,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
                                    @Param("description") String description,
                                    @Param("quantity") Integer quantity,
                                    Pageable pageable);
+
+    Product findByName(String name);
 }

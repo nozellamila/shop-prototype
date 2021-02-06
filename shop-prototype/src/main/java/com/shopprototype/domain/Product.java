@@ -20,12 +20,9 @@ public class Product implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @NotBlank
     private String name;
-    @NotBlank
     private String price;
     private String description;
-    @NotBlank
     private Integer quantity;
 
     @ManyToMany(mappedBy = "products")

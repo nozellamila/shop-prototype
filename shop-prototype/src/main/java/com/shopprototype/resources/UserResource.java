@@ -48,7 +48,7 @@ public class UserResource {
 
     @Transactional
     @PutMapping(value = "/{id}")
-    public ResponseEntity<UserView> putUser(@PathVariable Integer id, @RequestBody @Valid UserForm userForm) {
+    public ResponseEntity<UserView> putUser(@PathVariable Integer id, @RequestBody @Valid UserForm userForm) throws ServiceException {
         return userService.putUser(id, userForm);
     }
 

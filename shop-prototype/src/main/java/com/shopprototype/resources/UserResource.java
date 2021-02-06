@@ -1,7 +1,9 @@
 package com.shopprototype.resources;
 
 import com.shopprototype.domain.User;
+import com.shopprototype.form.UserForm;
 import com.shopprototype.services.UserService;
+import com.shopprototype.services.exceptions.ServiceException;
 import com.shopprototype.views.UserView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -9,6 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import javax.transaction.Transactional;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/users")
@@ -31,5 +37,17 @@ public class UserResource {
     public ResponseEntity<?> find(@PathVariable Integer id){
         User obj = userService.find(id);
         return ResponseEntity.ok().body(obj);
+    }
+
+    @Transactional
+    @PostMapping
+    public ResponseEntity<UserView> postUser(@RequestBody @Valid UserForm userForm, UriComponentsBuilder builder) throws ServiceException {
+        return userService.postUser(userForm, builder);
+    }
+
+    @Transactional
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<UserView> putUser(@PathVariable Integer id, @RequestBody @Valid UserForm userForm) {
+        return userService.putUser(id, userForm);
     }
 }

@@ -3,6 +3,7 @@ package com.shopprototype.domain;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +20,13 @@ public class Product implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @NotBlank
     private String name;
+    @NotBlank
     private String price;
     private String description;
-    private String quantity;
+    @NotBlank
+    private Integer quantity;
 
     @ManyToMany(mappedBy = "products")
     private List<Cart> carts = new ArrayList<>();

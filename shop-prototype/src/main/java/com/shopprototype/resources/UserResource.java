@@ -4,6 +4,7 @@ import com.shopprototype.domain.User;
 import com.shopprototype.form.UserForm;
 import com.shopprototype.services.UserService;
 import com.shopprototype.services.exceptions.ServiceException;
+import com.shopprototype.views.UserMessage;
 import com.shopprototype.views.UserView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -49,5 +50,11 @@ public class UserResource {
     @PutMapping(value = "/{id}")
     public ResponseEntity<UserView> putUser(@PathVariable Integer id, @RequestBody @Valid UserForm userForm) {
         return userService.putUser(id, userForm);
+    }
+
+    @Transactional
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<UserMessage> deleteUser(@PathVariable Integer id) throws ServiceException {
+        return userService.deleteUser(id);
     }
 }

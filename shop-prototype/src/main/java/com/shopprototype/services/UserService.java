@@ -5,6 +5,7 @@ import com.shopprototype.form.UserForm;
 import com.shopprototype.repositories.UserRepository;
 import com.shopprototype.services.exceptions.ObjectNotFoundException;
 import com.shopprototype.services.exceptions.ServiceException;
+import com.shopprototype.views.UserMessage;
 import com.shopprototype.views.UserView;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +75,22 @@ public class UserService {
             userFound.setAdmin(userForm.getAdmin());
 
             return ResponseEntity.ok(new UserView(userFound));
+        }
+    }
+
+    public ResponseEntity<UserMessage> deleteUser(Integer id) throws ServiceException {
+        Optional<User> user = userRepository.findById(id);
+
+        if(!user.isPresent())
+            return ResponseEntity.ok(new UserMessage("Nenhum usuário excluído"));
+        else {
+            if(user.get().getCart() != null)
+                throw new ServiceException("Não é possível excluir usuário com carrinho");
+            else{
+                userRepository.deleteById(user.get().getId());
+                return ResponseEntity.ok(new UserMessage("Usuário excluído com sucesso"));
+            }
+
         }
     }
 }

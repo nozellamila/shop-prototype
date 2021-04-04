@@ -12,7 +12,6 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode
 @AllArgsConstructor
-@NoArgsConstructor
 public class Cart implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -23,10 +22,14 @@ public class Cart implements Serializable {
     @OneToOne
     private User user;
 
-    @ManyToMany
-    @JoinTable(name = "PRODUCT_CART",
-            joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name = "cart_id")
-    )
-    private List<Product> products = new ArrayList<>();
+    @ManyToMany(mappedBy = "carts", cascade = CascadeType.ALL)
+    private List<Product> products = new ArrayList<Product>();
+
+    private Float totalPrice;
+    private Integer totalQuantity;
+
+    public Cart(){
+        this.totalPrice = 0.0f;
+        this.totalQuantity = 0;
+    }
 }

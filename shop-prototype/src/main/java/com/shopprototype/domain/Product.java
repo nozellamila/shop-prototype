@@ -1,5 +1,6 @@
 package com.shopprototype.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -21,10 +22,15 @@ public class Product implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
-    private String price;
+    private Float price;
     private String description;
     private Integer quantity;
 
-    @ManyToMany(mappedBy = "products")
-    private List<Cart> carts = new ArrayList<>();
+    @JsonIgnore
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "PRODUCT_CART",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "cart_id")
+    )
+    private List<Cart> carts = new ArrayList<Cart>();
 }

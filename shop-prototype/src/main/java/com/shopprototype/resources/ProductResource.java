@@ -1,14 +1,10 @@
 package com.shopprototype.resources;
 
-import com.shopprototype.form.ProductForm;
-import com.shopprototype.form.UserForm;
+import com.shopprototype.forms.ProductForm;
 import com.shopprototype.services.ProductService;
-import com.shopprototype.services.UserService;
 import com.shopprototype.services.exceptions.ServiceException;
 import com.shopprototype.views.ProductMessage;
 import com.shopprototype.views.ProductView;
-import com.shopprototype.views.UserMessage;
-import com.shopprototype.views.UserView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,7 +25,7 @@ public class ProductResource {
     @GetMapping
     public ResponseEntity<Page<ProductView>> getProduct(@RequestParam(name = "id", required = false) Integer id,
                                                         @RequestParam(name = "name", required = false) String name,
-                                                        @RequestParam(name = "price", required = false) String price,
+                                                        @RequestParam(name = "price", required = false) Float price,
                                                         @RequestParam(name = "description", required = false) String description,
                                                         @RequestParam(name = "quantity", required = false) Integer quantity,
                                                         Pageable pageable){

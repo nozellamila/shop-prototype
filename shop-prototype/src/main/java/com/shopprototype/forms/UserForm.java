@@ -1,4 +1,4 @@
-package com.shopprototype.form;
+package com.shopprototype.forms;
 
 import lombok.Getter;
 import lombok.Setter;

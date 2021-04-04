@@ -17,7 +17,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             "(:quantity IS NULL OR product.quantity = :quantity)")
     Page<Product> findByParameters(@Param("id") Integer id,
                                    @Param("name") String name,
-                                   @Param("price") String price,
+                                   @Param("price") Float price,
                                    @Param("description") String description,
                                    @Param("quantity") Integer quantity,
                                    Pageable pageable);

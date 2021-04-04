@@ -1,7 +1,7 @@
 package com.shopprototype.services;
 
 import com.shopprototype.domain.User;
-import com.shopprototype.form.UserForm;
+import com.shopprototype.forms.UserForm;
 import com.shopprototype.repositories.UserRepository;
 import com.shopprototype.services.exceptions.ObjectNotFoundException;
 import com.shopprototype.services.exceptions.ServiceException;
@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;

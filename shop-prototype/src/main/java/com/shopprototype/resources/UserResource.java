@@ -1,7 +1,7 @@
 package com.shopprototype.resources;
 
 import com.shopprototype.domain.User;
-import com.shopprototype.form.UserForm;
+import com.shopprototype.forms.UserForm;
 import com.shopprototype.services.UserService;
 import com.shopprototype.services.exceptions.ServiceException;
 import com.shopprototype.views.UserMessage;

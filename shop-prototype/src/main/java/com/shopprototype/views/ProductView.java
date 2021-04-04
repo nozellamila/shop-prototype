@@ -13,7 +13,7 @@ import lombok.Setter;
 public class ProductView {
     private Integer id;
     private String name;
-    private String price;
+    private Float price;
     private String description;
     private Integer quantity;
 

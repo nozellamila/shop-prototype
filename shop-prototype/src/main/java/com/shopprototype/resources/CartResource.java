@@ -1,9 +1,44 @@
 package com.shopprototype.resources;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.shopprototype.forms.CartForm;
+import com.shopprototype.services.CartService;
+import com.shopprototype.services.exceptions.ServiceException;
+import com.shopprototype.views.CartMessage;
+import com.shopprototype.views.CartView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import javax.transaction.Transactional;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/carts")
 public class CartResource {
+
+    @Autowired
+    CartService cartService;
+
+    @GetMapping
+    public ResponseEntity<Page<CartView>> getCart(@RequestParam(name = "id", required = false) Integer id,
+                                                  @RequestParam(name = "totalPrice", required = false) Float totalPrice,
+                                                  @RequestParam(name = "totalQuantity", required = false) Integer totalQuantity,
+                                                  @RequestParam(name = "userId", required = false) Integer userId,
+                                                  Pageable pageable){
+        return cartService.getCart(id, totalPrice, totalQuantity, userId, pageable);
+    }
+
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<CartView> getCartById(@PathVariable Integer id){
+        return cartService.getCartById(id);
+    }
+
+    @Transactional
+    @PostMapping
+    public ResponseEntity<CartMessage> postUser(@RequestBody @Valid CartForm cartForm, UriComponentsBuilder builder) throws ServiceException {
+        return cartService.postCart(cartForm, builder);
+    }
 }

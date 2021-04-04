@@ -1,15 +1,12 @@
 package com.shopprototype.services;
 
 import com.shopprototype.domain.Product;
-import com.shopprototype.domain.User;
-import com.shopprototype.form.ProductForm;
+import com.shopprototype.forms.ProductForm;
 import com.shopprototype.repositories.ProductRepository;
 import com.shopprototype.services.exceptions.ObjectNotFoundException;
 import com.shopprototype.services.exceptions.ServiceException;
 import com.shopprototype.views.ProductMessage;
 import com.shopprototype.views.ProductView;
-import com.shopprototype.views.UserMessage;
-import com.shopprototype.views.UserView;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,7 +25,7 @@ public class ProductService {
     @Autowired
     ProductRepository productRepository;
 
-    public ResponseEntity<Page<ProductView>> getProduct(Integer id, String name, String price, String description, Integer quantity, Pageable pageable) {
+    public ResponseEntity<Page<ProductView>> getProduct(Integer id, String name, Float price, String description, Integer quantity, Pageable pageable) {
         Page<Product> products = productRepository.findByParameters(id, name, price, description, quantity, pageable);
 
         if(products != null && !products.isEmpty()){

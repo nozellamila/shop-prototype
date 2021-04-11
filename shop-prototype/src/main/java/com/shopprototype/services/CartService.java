@@ -2,10 +2,12 @@ package com.shopprototype.services;
 
 import com.shopprototype.domain.Cart;
 import com.shopprototype.domain.Product;
+import com.shopprototype.domain.AuxProductCart;
 import com.shopprototype.domain.User;
 import com.shopprototype.forms.CartForm;
 import com.shopprototype.forms.FinishBuyForm;
 import com.shopprototype.forms.ProductCartForm;
+import com.shopprototype.repositories.AuxProductCartRepository;
 import com.shopprototype.repositories.CartRepository;
 import com.shopprototype.repositories.ProductRepository;
 import com.shopprototype.repositories.UserRepository;
@@ -13,10 +15,10 @@ import com.shopprototype.services.exceptions.ObjectNotFoundException;
 import com.shopprototype.services.exceptions.ServiceException;
 import com.shopprototype.views.CartMessage;
 import com.shopprototype.views.CartView;
-import com.shopprototype.views.ProductView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,9 @@ public class CartService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    AuxProductCartRepository auxProductCartRepository;
 
     public ResponseEntity<Page<CartView>> getCart(Integer id, Float totalPrice, Integer totalQuantity, Integer userId, Pageable pageable) {
         Page<Cart> carts = cartRepository.findByParameters(id, totalPrice, totalQuantity, userId, pageable);
@@ -82,12 +87,22 @@ public class CartService {
 
         List<ProductCartForm> productsIds = cartForm.getProducts();
         List<Product> products = new ArrayList<>();
+        List<AuxProductCart> auxProductCarts = new ArrayList<>();
 
         for (ProductCartForm productId : productsIds) {
             Optional<Product> obj = productRepository.findById(productId.getProductId());
 
             if (obj.isPresent()) {
                 products.add(obj.get());
+
+                AuxProductCart auxProductCartAux = new AuxProductCart();
+                auxProductCartAux.setProductId(obj.get().getId());
+                auxProductCartAux.setPrice(obj.get().getPrice());
+                auxProductCartAux.setQuantity(productId.getQuantity());
+                auxProductCarts.add(auxProductCartAux);
+
+                auxProductCartRepository.save(auxProductCartAux);
+
 
                 if (obj.get().getQuantity() >= productId.getQuantity()) {
                     Integer productQuantity = productId.getQuantity();
@@ -102,6 +117,7 @@ public class CartService {
             }
         }
         cart.setProducts(products);
+        cart.setAuxProductCarts(auxProductCarts);
         cartRepository.save(cart);
 
         for (Product product : products) {
@@ -111,9 +127,14 @@ public class CartService {
             //productRepository.save(product);
         }
 
+        for (AuxProductCart auxProductCart : auxProductCarts) {
+            List<Cart> cartList = new ArrayList<>();
+            cartList.add(cart);
+            auxProductCart.setCarts(cartList);
+        }
+
         URI uri = builder.path("/carts/{id}").buildAndExpand(cart.getId()).toUri();
         return ResponseEntity.created(uri).body(new CartMessage("Cadastro realizado com sucesso", cart.getId()));
-        //Para salvar carrinho: usuário id, lista de produtos, preço total, quantidade total
     }
 
     public ResponseEntity<CartMessage> deleteCart(FinishBuyForm finishBuyForm) throws ServiceException {

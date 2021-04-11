@@ -4,6 +4,7 @@ import com.shopprototype.domain.Cart;
 import com.shopprototype.domain.Product;
 import com.shopprototype.domain.User;
 import com.shopprototype.forms.CartForm;
+import com.shopprototype.forms.FinishBuyForm;
 import com.shopprototype.forms.ProductCartForm;
 import com.shopprototype.repositories.CartRepository;
 import com.shopprototype.repositories.ProductRepository;
@@ -61,8 +62,9 @@ public class CartService {
     }
 
     public ResponseEntity<CartMessage> postCart(CartForm cartForm, UriComponentsBuilder builder) throws ServiceException {
-        //Carrinho é vinculado ao token de autorização, acrescentar.
-        //É permitido somente um carrinho por vez para cada usuário
+        //TODO: Carrinho é vinculado ao token de autorização, acrescentar.
+        //TODO: Validar se id e quantidade da lista de produtos são nulos, não permitir
+
         Cart cart = new Cart();
 
         Optional<User> user = userRepository.findById(cartForm.getUserId());
@@ -112,5 +114,45 @@ public class CartService {
         URI uri = builder.path("/carts/{id}").buildAndExpand(cart.getId()).toUri();
         return ResponseEntity.created(uri).body(new CartMessage("Cadastro realizado com sucesso", cart.getId()));
         //Para salvar carrinho: usuário id, lista de produtos, preço total, quantidade total
+    }
+
+    public ResponseEntity<CartMessage> deleteCart(FinishBuyForm finishBuyForm) throws ServiceException {
+        Optional<User> user = userRepository.findById(finishBuyForm.getUserId());
+
+        if (user.isPresent()) {
+            Cart obj = cartRepository.findByUserId(user.get().getId());
+
+            if (obj != null) {
+                cartRepository.delete(obj);
+                return new ResponseEntity<CartMessage>(new CartMessage("Compra finalizada com sucesso", obj.getId()), HttpStatus.OK);
+            } else {
+                throw new ServiceException("Não há carrinho cadastrado para o usuário");
+            }
+        } else {
+            throw new ObjectNotFoundException("Usuário não encontrado");
+        }
+    }
+
+    public ResponseEntity<CartMessage> cancelCart(FinishBuyForm finishBuyForm) throws ServiceException {
+        Optional<User> user = userRepository.findById(finishBuyForm.getUserId());
+
+        if (user.isPresent()) {
+            Cart obj = cartRepository.findByUserId(user.get().getId());
+
+            if (obj != null) {
+                List<Product> products = new ArrayList<>();
+                products.addAll(obj.getProducts());
+                for(Product product : products){
+                    Optional<Product> productEntity = productRepository.findById(product.getId());
+                    productEntity.get().setQuantity(productEntity.get().getQuantity() + product.getQuantity());
+                }
+                cartRepository.delete(obj);
+                return new ResponseEntity<CartMessage>(new CartMessage("Compra cancelada com sucesso", obj.getId()), HttpStatus.OK);
+            } else {
+                throw new ServiceException("Não há carrinho cadastrado para o usuário");
+            }
+        } else {
+            throw new ObjectNotFoundException("Usuário não encontrado");
+        }
     }
 }

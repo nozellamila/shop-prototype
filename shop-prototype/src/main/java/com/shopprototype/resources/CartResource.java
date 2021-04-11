@@ -1,6 +1,7 @@
 package com.shopprototype.resources;
 
 import com.shopprototype.forms.CartForm;
+import com.shopprototype.forms.FinishBuyForm;
 import com.shopprototype.services.CartService;
 import com.shopprototype.services.exceptions.ServiceException;
 import com.shopprototype.views.CartMessage;
@@ -38,7 +39,19 @@ public class CartResource {
 
     @Transactional
     @PostMapping
-    public ResponseEntity<CartMessage> postUser(@RequestBody @Valid CartForm cartForm, UriComponentsBuilder builder) throws ServiceException {
+    public ResponseEntity<CartMessage> postCart(@RequestBody @Valid CartForm cartForm, UriComponentsBuilder builder) throws ServiceException {
         return cartService.postCart(cartForm, builder);
+    }
+
+    @Transactional
+    @DeleteMapping(value = "/finish-buy")
+    public ResponseEntity<CartMessage> deleteCart(@RequestBody @Valid FinishBuyForm finishBuyForm) throws ServiceException {
+        return cartService.deleteCart(finishBuyForm);
+    }
+
+    @Transactional
+    @DeleteMapping(value = "/cancel-buy")
+    public ResponseEntity<CartMessage> cancelCart(@RequestBody @Valid FinishBuyForm finishBuyForm) throws ServiceException {
+        return cartService.cancelCart(finishBuyForm);
     }
 }

@@ -128,9 +128,7 @@ public class CartService {
         }
 
         for (AuxProductCart auxProductCart : auxProductCarts) {
-            List<Cart> cartList = new ArrayList<>();
-            cartList.add(cart);
-            auxProductCart.setCarts(cartList);
+            auxProductCart.setCart(cart);
         }
 
         URI uri = builder.path("/carts/{id}").buildAndExpand(cart.getId()).toUri();

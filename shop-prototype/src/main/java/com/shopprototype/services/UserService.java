@@ -26,9 +26,9 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
-    public ResponseEntity<Page<UserView>> getUser(Integer id, String name, String email, Boolean admin, Pageable pageable){
+    public ResponseEntity<Page<UserView>> getUser(Integer id, String name, String email, Pageable pageable){
 
-        Page<User> users = userRepository.findByParameters(id, name, email, admin, pageable);
+        Page<User> users = userRepository.findByParameters(id, name, email, pageable);
 
         if(users != null && !users.isEmpty()){
             return new ResponseEntity<Page<UserView>>(users.map(UserView::new), HttpStatus.OK);
@@ -46,11 +46,12 @@ public class UserService {
 
     public ResponseEntity<UserView> postUser(UserForm userForm, UriComponentsBuilder builder) throws ServiceException {
 
-        User user = userRepository.findByEmail(userForm.getEmail());
+        Optional<User> userAux = userRepository.findByEmail(userForm.getEmail());
 
-        if(user != null)
-            throw new ServiceException("Usuário já cadastrado com o e-mail: " + user.getEmail());
+        if(userAux.isPresent())
+            throw new ServiceException("Usuário já cadastrado com o e-mail: " + userAux.get().getEmail());
         else {
+            User user = new User();
             ModelMapper modelMapper = new ModelMapper();
             user = modelMapper.map(userForm, User.class);
 
@@ -63,20 +64,20 @@ public class UserService {
 
     public ResponseEntity<UserView> putUser(Integer id, UserForm userForm) throws ServiceException {
         Optional<User> user = userRepository.findById(id);
-        User userByEmail = userRepository.findByEmail(userForm.getEmail());
+        Optional<User> userByEmail = userRepository.findByEmail(userForm.getEmail());
 
         if(!user.isPresent())
             throw new ObjectNotFoundException("Usuário não encontrado");
         if(user.isPresent() && userByEmail != null)
-            if(user.get().getId() != userByEmail.getId())
-                throw new ServiceException("Usuário já cadastrado com o e-mail: " + userByEmail.getEmail());
+            if(user.get().getId() != userByEmail.get().getId())
+                throw new ServiceException("Usuário já cadastrado com o e-mail: " + userByEmail.get().getEmail());
 
         User userFound;
         userFound = user.get();
         userFound.setName(userForm.getName());
         userFound.setEmail(userForm.getEmail());
         userFound.setPassword(userForm.getPassword());
-        userFound.setAdmin(userForm.getAdmin());
+        userFound.setRole(userForm.getRole());
 
         return ResponseEntity.ok(new UserView(userFound));
     }

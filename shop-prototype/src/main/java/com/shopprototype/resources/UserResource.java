@@ -28,9 +28,8 @@ public class UserResource {
     public ResponseEntity<Page<UserView>> getUser(@RequestParam(name = "id", required = false) Integer id,
                                                   @RequestParam(name = "name", required = false) String name,
                                                   @RequestParam(name = "email", required = false) String email,
-                                                  @RequestParam(name = "admin", required = false) Boolean admin,
                                                   Pageable pageable){
-        return userService.getUser(id, name, email, admin, pageable);
+        return userService.getUser(id, name, email, pageable);
     }
 
 

@@ -1,6 +1,7 @@
 package com.shopprototype.views;
 
 
+import com.shopprototype.domain.Role;
 import com.shopprototype.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,12 +19,12 @@ public class UserView {
     private Integer id;
     private String name;
     private String email;
-    private Boolean admin;
+    private List<Role> role = new ArrayList<>();
 
     public UserView(User user){
         this.id = user.getId();
         this.name = user.getName();
         this.email = user.getEmail();
-        this.admin = user.getAdmin();
+        this.role = user.getRole();
     }
 }

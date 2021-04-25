@@ -1,6 +1,7 @@
 package com.shopprototype.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,12 +38,13 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/products").permitAll()
                 .antMatchers(HttpMethod.POST, "/auth").permitAll()
                 .antMatchers("/").permitAll()
-                .antMatchers("/h2-console/**").permitAll();
+                .antMatchers("/h2-console/**").permitAll()
+                .anyRequest().authenticated();
 
 
         http.csrf().disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.headers().frameOptions().disable();
+        //http.headers().frameOptions().disable();
     }
 
     @Override

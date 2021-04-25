@@ -1,11 +1,13 @@
 package com.shopprototype.security;
 
+import com.shopprototype.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -13,13 +15,21 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
 @Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private AuthenticationService authenticationService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private TokenService tokenService;
 
     @Override
     @Bean
@@ -39,12 +49,16 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/auth").permitAll()
                 .antMatchers("/").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/products").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/products/*").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/products/*").hasRole("ADMIN")
                 .anyRequest().authenticated();
 
 
         http.csrf().disable()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        //http.headers().frameOptions().disable();
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and().addFilterBefore(new TokenAuthenticationFilter(tokenService, userRepository), UsernamePasswordAuthenticationFilter.class);
+        http.headers().frameOptions().disable();
     }
 
     @Override

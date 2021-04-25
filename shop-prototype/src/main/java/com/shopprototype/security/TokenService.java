@@ -1,6 +1,7 @@
 package com.shopprototype.security;
 
 import com.shopprototype.domain.User;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,5 +31,19 @@ public class TokenService {
                 .setExpiration(expirationDate)
                 .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
+    }
+
+    public boolean isTokenValid(String token) {
+        try {
+            Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token);
+            return true;
+        }catch (Exception e){
+            return false;
+        }
+    }
+
+    public Integer getUserId(String token) {
+        Claims claims = Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token).getBody();
+        return Integer.parseInt(claims.getSubject());
     }
 }

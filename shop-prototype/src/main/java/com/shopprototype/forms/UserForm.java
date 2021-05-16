@@ -22,5 +22,5 @@ public class UserForm {
     @Length(min = 6, max = 6, message = "Senha deve ter seis caracteres")
     @NotBlank(message = "{senha.not.blank}")
     private String password;
-    private List<Role> role = new ArrayList<>();
+    private List<String> rolesNames = new ArrayList<>();
 }

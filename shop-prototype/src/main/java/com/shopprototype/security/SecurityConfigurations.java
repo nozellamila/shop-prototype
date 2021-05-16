@@ -46,12 +46,14 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/products").permitAll()
+                .antMatchers(HttpMethod.POST, "/users").permitAll()
                 .antMatchers(HttpMethod.POST, "/auth").permitAll()
                 .antMatchers("/").permitAll()
+                .antMatchers("/swagger-ui/**").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/products").hasRole("ADMIN")
-                .antMatchers(HttpMethod.PUT, "/products/*").hasRole("ADMIN")
-                .antMatchers(HttpMethod.DELETE, "/products/*").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST, "/products").hasAnyAuthority("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/products/*").hasAnyAuthority("ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/products/*").hasAnyAuthority("ADMIN")
                 .anyRequest().authenticated();
 
 
@@ -63,6 +65,7 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-
+        web.ignoring()
+                .antMatchers("/**.html", "/v2/api-docs", "/webjars/**", "/configuration/**", "/swagger-resources/**");
     }
 }

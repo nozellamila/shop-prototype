@@ -19,12 +19,15 @@ public class UserView {
     private Integer id;
     private String name;
     private String email;
-    private List<Role> role = new ArrayList<>();
+    private List<String> role = new ArrayList<>();
 
     public UserView(User user){
+
         this.id = user.getId();
         this.name = user.getName();
         this.email = user.getEmail();
-        this.role = user.getRole();
+        user.getRole().forEach(role -> {
+            this.role.add(role.getAuthority());
+        });
     }
 }

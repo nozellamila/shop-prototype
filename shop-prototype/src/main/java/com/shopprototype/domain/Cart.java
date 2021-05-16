@@ -25,7 +25,7 @@ public class Cart implements Serializable {
     @ManyToMany(mappedBy = "carts", cascade = CascadeType.ALL)
     private List<Product> products = new ArrayList<Product>();
 
-    @OneToMany(mappedBy = "cart")
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.REMOVE)
     private List<AuxProductCart> auxProductCarts = new ArrayList<AuxProductCart>();
 
     private Float totalPrice;

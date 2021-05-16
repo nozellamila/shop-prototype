@@ -3,6 +3,7 @@ package com.shopprototype.security;
 import antlr.Token;
 import com.shopprototype.domain.User;
 import com.shopprototype.repositories.UserRepository;
+import lombok.SneakyThrows;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -12,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.rmi.server.ExportException;
 import java.util.Optional;
 
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
@@ -24,6 +26,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         this.userRepository = userRepository;
     }
 
+    @SneakyThrows
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest,
                                     HttpServletResponse httpServletResponse,

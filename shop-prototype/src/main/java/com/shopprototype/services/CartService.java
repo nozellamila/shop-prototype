@@ -25,7 +25,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -118,6 +121,8 @@ public class CartService {
         }
         cart.setProducts(products);
         cart.setAuxProductCarts(auxProductCarts);
+        LocalDateTime creationDate = LocalDateTime.now();
+        cart.setCreationDate(creationDate);
         cartRepository.save(cart);
 
         for (Product product : products) {
@@ -132,7 +137,7 @@ public class CartService {
         }
 
         URI uri = builder.path("/carts/{id}").buildAndExpand(cart.getId()).toUri();
-        return ResponseEntity.created(uri).body(new CartMessage("Cadastro realizado com sucesso", cart.getId()));
+        return ResponseEntity.created(uri).body(new CartMessage("Cadastro realizado com sucesso", cart.getId(), cart.getCreationDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"))));
     }
 
     public ResponseEntity<CartMessage> deleteCart(FinishBuyForm finishBuyForm) throws ServiceException {
@@ -155,7 +160,7 @@ public class CartService {
                 });
 
                 cartRepository.delete(cart);
-                return new ResponseEntity<CartMessage>(new CartMessage("Compra finalizada com sucesso", cart.getId()), HttpStatus.OK);
+                return new ResponseEntity<CartMessage>(new CartMessage("Compra finalizada com sucesso", cart.getId(), LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"))), HttpStatus.OK);
             } else {
                 throw new ServiceException("Não há carrinho cadastrado para o usuário");
             }
@@ -186,7 +191,7 @@ public class CartService {
                     productRepository.save(productEntity);
                 }
                 cartRepository.delete(cart);
-                return new ResponseEntity<CartMessage>(new CartMessage("Compra cancelada com sucesso", cart.getId()), HttpStatus.OK);
+                return new ResponseEntity<CartMessage>(new CartMessage("Compra cancelada com sucesso", cart.getId(), LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"))), HttpStatus.OK);
             } else {
                 throw new ServiceException("Não há carrinho cadastrado para o usuário");
             }

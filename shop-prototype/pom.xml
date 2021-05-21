@@ -82,9 +82,13 @@
 			<artifactId>lombok</artifactId>
 			<groupId>org.projectlombok</groupId>
 		</dependency>
+        <dependency>
+            <groupId>net.minidev</groupId>
+            <artifactId>json-smart</artifactId>
+        </dependency>
 
 
-	</dependencies>
+    </dependencies>
 
 	<build>
 		<plugins>

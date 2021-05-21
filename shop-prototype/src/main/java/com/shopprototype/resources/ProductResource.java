@@ -5,6 +5,7 @@ import com.shopprototype.services.ProductService;
 import com.shopprototype.services.exceptions.ServiceException;
 import com.shopprototype.views.ProductMessage;
 import com.shopprototype.views.ProductView;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/products")
+@Api( tags = "Products")
 public class ProductResource {
 
     @Autowired

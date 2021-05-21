@@ -19,7 +19,7 @@ import java.util.Optional;
 public class AuthenticationService implements UserDetailsService {
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -27,8 +27,7 @@ public class AuthenticationService implements UserDetailsService {
 
         if(user.isPresent()){
             return user.get();
-        }else {
-            throw new ObjectNotFoundException("Dados inválidos");
         }
+            throw new UsernameNotFoundException("Dados inválidos");
     }
 }

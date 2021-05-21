@@ -14,15 +14,13 @@ import java.util.List;
 @Getter
 @Setter
 public class UserForm {
-    @NotBlank(message = "{name.not.blank}")
+    @NotBlank(message = "Nome não deve ser nulo ou vazio")
     private String name;
-    @Email(message = "{email.not.valid}")
-    @NotBlank(message = "{email.not.blank}")
+    @Email(message = "Insira um email válido")
+    @NotBlank(message = "Email não deve ser nulo ou vazio")
     private String email;
-    @Length(min = 6, max = 6, message = "Senha deve ter seis caracteres")
-    @NotBlank(message = "{senha.not.blank}")
+    @NotBlank(message = "Senha não deve ser nulo ou vazio")
+    @Length(min = 6, max = 10, message = "Senha deve ter 6 a 10 digitos")
     private String password;
-    @NotNull(message = "Perfil não deve ser nulo")
-    @NotBlank
-    private List<Role> role = new ArrayList<>();
+    private List<String> rolesNames = new ArrayList<>();
 }

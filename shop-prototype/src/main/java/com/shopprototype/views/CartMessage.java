@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -12,4 +14,6 @@ import lombok.Setter;
 public class CartMessage {
     private String message;
     private Integer id;
+    private String date;
+
 }

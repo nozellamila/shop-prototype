@@ -6,6 +6,7 @@ import com.shopprototype.services.UserService;
 import com.shopprototype.services.exceptions.ServiceException;
 import com.shopprototype.views.UserMessage;
 import com.shopprototype.views.UserView;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/users")
+@Api( tags = "Users")
 public class UserResource {
 
     @Autowired

@@ -25,7 +25,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -90,27 +93,27 @@ public class CartService {
         List<AuxProductCart> auxProductCarts = new ArrayList<>();
 
         for (ProductCartForm productId : productsIds) {
-            Optional<Product> obj = productRepository.findById(productId.getProductId());
+            Optional<Product> productCart = productRepository.findById(productId.getProductId());
 
-            if (obj.isPresent()) {
-                products.add(obj.get());
+            if (productCart.isPresent()) {
+                products.add(productCart.get());
 
                 AuxProductCart auxProductCartAux = new AuxProductCart();
-                auxProductCartAux.setProductId(obj.get().getId());
-                auxProductCartAux.setPrice(obj.get().getPrice());
+                auxProductCartAux.setProductId(productCart.get().getId());
+                auxProductCartAux.setPrice(productCart.get().getPrice());
                 auxProductCartAux.setQuantity(productId.getQuantity());
                 auxProductCarts.add(auxProductCartAux);
 
                 auxProductCartRepository.save(auxProductCartAux);
 
 
-                if (obj.get().getQuantity() >= productId.getQuantity()) {
+                if (productCart.get().getQuantity() >= productId.getQuantity()) {
                     Integer productQuantity = productId.getQuantity();
                     cart.setTotalQuantity((cart.getTotalQuantity() + productQuantity));
-                    cart.setTotalPrice(cart.getTotalPrice() + (obj.get().getPrice()*productQuantity));
+                    cart.setTotalPrice(cart.getTotalPrice() + (productCart.get().getPrice()*productQuantity));
 
-                    obj.get().setQuantity((obj.get().getQuantity() - productId.getQuantity()));
-                    productRepository.save(obj.get());
+                    productCart.get().setQuantity((productCart.get().getQuantity() - productQuantity));
+                    productRepository.save(productCart.get());
                 } else throw new ServiceException("Não é possível cadastrar quantidade maior que a disponível");
             } else {
                 throw new ObjectNotFoundException("Produto não existe");
@@ -118,6 +121,8 @@ public class CartService {
         }
         cart.setProducts(products);
         cart.setAuxProductCarts(auxProductCarts);
+        LocalDateTime creationDate = LocalDateTime.now();
+        cart.setCreationDate(creationDate);
         cartRepository.save(cart);
 
         for (Product product : products) {
@@ -132,18 +137,30 @@ public class CartService {
         }
 
         URI uri = builder.path("/carts/{id}").buildAndExpand(cart.getId()).toUri();
-        return ResponseEntity.created(uri).body(new CartMessage("Cadastro realizado com sucesso", cart.getId()));
+        return ResponseEntity.created(uri).body(new CartMessage("Cadastro realizado com sucesso", cart.getId(), cart.getCreationDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"))));
     }
 
     public ResponseEntity<CartMessage> deleteCart(FinishBuyForm finishBuyForm) throws ServiceException {
         Optional<User> user = userRepository.findById(finishBuyForm.getUserId());
 
         if (user.isPresent()) {
-            Cart obj = cartRepository.findByUserId(user.get().getId());
+            Cart cart = cartRepository.findByUserId(user.get().getId());
 
-            if (obj != null) {
-                cartRepository.delete(obj);
-                return new ResponseEntity<CartMessage>(new CartMessage("Compra finalizada com sucesso", obj.getId()), HttpStatus.OK);
+            if (cart != null) {
+                List<Product> productList = new ArrayList<>();
+                productList.addAll(cart.getProducts());
+
+                productList.forEach(product -> {
+                    Product productFound = productRepository.findById(product.getId()).get();
+
+                    productFound.getCarts().remove(cart);
+                    cart.getProducts().remove(productFound);
+
+                    productRepository.save(productFound);
+                });
+
+                cartRepository.delete(cart);
+                return new ResponseEntity<CartMessage>(new CartMessage("Compra finalizada com sucesso", cart.getId(), LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"))), HttpStatus.OK);
             } else {
                 throw new ServiceException("Não há carrinho cadastrado para o usuário");
             }
@@ -156,17 +173,25 @@ public class CartService {
         Optional<User> user = userRepository.findById(finishBuyForm.getUserId());
 
         if (user.isPresent()) {
-            Cart obj = cartRepository.findByUserId(user.get().getId());
+            Cart cart = cartRepository.findByUserId(user.get().getId());
 
-            if (obj != null) {
+            if (cart != null) {
                 List<Product> products = new ArrayList<>();
-                products.addAll(obj.getProducts());
-                for(Product product : products){
-                    Optional<Product> productEntity = productRepository.findById(product.getId());
-                    productEntity.get().setQuantity(productEntity.get().getQuantity() + product.getQuantity());
+                List<AuxProductCart> auxProductCartList = new ArrayList<>();
+                products.addAll(cart.getProducts());
+                auxProductCartList.addAll(cart.getAuxProductCarts());
+
+                for(AuxProductCart auxProductCart : auxProductCartList){
+                    Product productEntity = productRepository.findById(auxProductCart.getProductId()).get();
+
+                    productEntity.getCarts().remove(cart);
+                    cart.getProducts().remove(productEntity);
+
+                    productEntity.setQuantity(productEntity.getQuantity() + auxProductCart.getQuantity());
+                    productRepository.save(productEntity);
                 }
-                cartRepository.delete(obj);
-                return new ResponseEntity<CartMessage>(new CartMessage("Compra cancelada com sucesso", obj.getId()), HttpStatus.OK);
+                cartRepository.delete(cart);
+                return new ResponseEntity<CartMessage>(new CartMessage("Compra cancelada com sucesso", cart.getId(), LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"))), HttpStatus.OK);
             } else {
                 throw new ServiceException("Não há carrinho cadastrado para o usuário");
             }

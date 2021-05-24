@@ -101,7 +101,7 @@ public class UserService {
 
         if(!user.isPresent())
             throw new ObjectNotFoundException("Usuário não encontrado");
-        if(user.isPresent() && userByEmail != null)
+        if(user.isPresent() && userByEmail.isPresent())
             if(user.get().getId() != userByEmail.get().getId())
                 throw new ServiceException("Usuário já cadastrado com o e-mail: " + userByEmail.get().getEmail());
 

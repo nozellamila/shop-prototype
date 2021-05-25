@@ -20,7 +20,12 @@ public class StandardError implements Serializable {
         this.path = path;
     }
 
-    public StandardError(int value, String message, long currentTimeMillis) {
+    public StandardError(Integer status, String message, long currentTimeMillis, String path) {
+        this.status = status;
+        this.error = "";
+        this.message = message;
+        this.timestamp = currentTimeMillis;
+        this.path = path;
     }
 
     public Long getTimestamp() {

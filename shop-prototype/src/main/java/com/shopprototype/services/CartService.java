@@ -74,6 +74,8 @@ public class CartService {
         //TODO: Validar se id e quantidade da lista de produtos são nulos, não permitir
 
         Cart cart = new Cart();
+        List<Product> products = new ArrayList<>();
+        List<AuxProductCart> auxProductCarts = new ArrayList<>();
 
         Optional<User> user = userRepository.findById(cartForm.getUserId());
 
@@ -83,15 +85,23 @@ public class CartService {
             if(obj == null)
                 cart.setUser(user.get());
             else
-                throw new ServiceException("Não é possível cadastrar dois carrinhos para o mesmo usuário");
+                throw new ServiceException(HttpStatus.UNPROCESSABLE_ENTITY, "Não é possível cadastrar dois carrinhos para o mesmo usuário");
         }else {
             throw new ObjectNotFoundException("Usuário não encontrado");
         }
 
         List<ProductCartForm> productsIds = cartForm.getProducts();
-        List<Product> products = new ArrayList<>();
-        List<AuxProductCart> auxProductCarts = new ArrayList<>();
-
+/*
+        productsIds.forEach(productCartForm -> {
+            if(productCartForm.getProductId() == null || productCartForm.getQuantity() == null){
+                try {
+                    throw new ServiceException("Id do produto e/ou quantidade não devem ser vazios ou nulos");
+                } catch (ServiceException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+*/
         for (ProductCartForm productId : productsIds) {
             Optional<Product> productCart = productRepository.findById(productId.getProductId());
 
@@ -114,7 +124,7 @@ public class CartService {
 
                     productCart.get().setQuantity((productCart.get().getQuantity() - productQuantity));
                     productRepository.save(productCart.get());
-                } else throw new ServiceException("Não é possível cadastrar quantidade maior que a disponível");
+                } else throw new ServiceException(HttpStatus.UNPROCESSABLE_ENTITY, "Não é possível cadastrar quantidade maior que a disponível");
             } else {
                 throw new ObjectNotFoundException("Produto não existe");
             }
@@ -162,7 +172,7 @@ public class CartService {
                 cartRepository.delete(cart);
                 return new ResponseEntity<CartMessage>(new CartMessage("Compra finalizada com sucesso", cart.getId(), LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"))), HttpStatus.OK);
             } else {
-                throw new ServiceException("Não há carrinho cadastrado para o usuário");
+                throw new ObjectNotFoundException("Não há carrinho cadastrado para o usuário");
             }
         } else {
             throw new ObjectNotFoundException("Usuário não encontrado");
@@ -193,7 +203,7 @@ public class CartService {
                 cartRepository.delete(cart);
                 return new ResponseEntity<CartMessage>(new CartMessage("Compra cancelada com sucesso", cart.getId(), LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"))), HttpStatus.OK);
             } else {
-                throw new ServiceException("Não há carrinho cadastrado para o usuário");
+                throw new ObjectNotFoundException("Não há carrinho cadastrado para o usuário");
             }
         } else {
             throw new ObjectNotFoundException("Usuário não encontrado");

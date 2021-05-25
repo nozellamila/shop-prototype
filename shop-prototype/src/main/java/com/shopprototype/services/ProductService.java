@@ -39,10 +39,10 @@ public class ProductService {
         Product product = productRepository.findByName(productForm.getName());
 
         if(product != null)
-            throw new ServiceException("Produto já cadastrado com o nome: " + product.getName());
+            throw new ServiceException(HttpStatus.UNPROCESSABLE_ENTITY, "Produto já cadastrado com o nome: " + product.getName());
         else {
             if(productForm.getQuantity() < 0)
-                throw new ServiceException("Produto não pode ter quantidade negativa");
+                throw new ServiceException(HttpStatus.UNPROCESSABLE_ENTITY, "Produto não pode ter quantidade negativa");
 
             ModelMapper modelMapper = new ModelMapper();
             product = modelMapper.map(productForm, Product.class);
@@ -62,11 +62,11 @@ public class ProductService {
             throw new ObjectNotFoundException("Produto não encontrado");
         if(product.isPresent() && productByName != null){
            if(product.get().getId() != productByName.getId())
-               throw new ServiceException("Produto já cadastrado com o nome: " + productByName.getName());
+               throw new ServiceException(HttpStatus.CONFLICT, "Produto já cadastrado com o nome: " + productByName.getName());
         }
         if(product.isPresent()){
             if(productForm.getQuantity() < 0)
-                throw new ServiceException("Produto não pode ter quantidade negativa");
+                throw new ServiceException(HttpStatus.UNPROCESSABLE_ENTITY, "Produto não pode ter quantidade negativa");
             Product productFound = product.get();
             productFound.setName(productForm.getName());
             productFound.setPrice(productForm.getPrice());
@@ -84,7 +84,7 @@ public class ProductService {
             return ResponseEntity.ok(new ProductMessage("Nenhum produto excluído"));
         else {
             if(!product.get().getCarts().isEmpty())
-                throw new ServiceException("Não é possível excluir produto pertencente a algum carrinho");
+                throw new ServiceException(HttpStatus.UNPROCESSABLE_ENTITY, "Não é possível excluir produto pertencente a algum carrinho");
             else{
                 productRepository.deleteById(product.get().getId());
                 return ResponseEntity.ok(new ProductMessage("Produto excluído com sucesso"));

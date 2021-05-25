@@ -41,11 +41,20 @@ public class ResourceExceptionHandler {
         StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.BAD_REQUEST.value(), "Parâmetro não pode ser nulo", e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
     }
+
+    //Tratamento de parâmetro nulo
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<StandardError> parameterNull(IllegalArgumentException e, HttpServletRequest request) {
+
+        StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.BAD_REQUEST.value(), "Parâmetro não pode ser nulo", e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
+    }
+
     //Tratamento de nullpointer
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<StandardError> nullPointer(NullPointerException e, HttpServletRequest request) {
 
-        StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.INTERNAL_SERVER_ERROR.value(), "Retorno é nulo!", e.getMessage(), request.getRequestURI());
+        StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.BAD_REQUEST.value(), "Retorno é nulo! Parâmetro não pode ser nulo", e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
     }
     //Tratamento de objetos não encontrados
@@ -66,8 +75,8 @@ public class ResourceExceptionHandler {
     @ExceptionHandler(ServiceException.class)
     public ResponseEntity<StandardError> serviceException(ServiceException e, HttpServletRequest request) {
 
-        StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.BAD_REQUEST.value(), "Duplicidade", e.getMessage(), request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
+        StandardError err = new StandardError( e.getHttpStatus().value(), e.getMessage(), System.currentTimeMillis(), request.getRequestURI());
+        return ResponseEntity.status(e.getHttpStatus()).body(err);
     }
 
     //Tratamento de bean validation

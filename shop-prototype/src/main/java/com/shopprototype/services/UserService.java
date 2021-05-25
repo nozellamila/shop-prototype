@@ -77,7 +77,7 @@ public class UserService {
         }
 
         if(userAux.isPresent())
-            throw new ServiceException("Usuário já cadastrado com o e-mail: " + userAux.get().getEmail());
+            throw new ServiceException(HttpStatus.CONFLICT, "Usuário já cadastrado com o e-mail: " + userAux.get().getEmail());
         else {
             /*
             ModelMapper modelMapper = new ModelMapper();
@@ -103,7 +103,7 @@ public class UserService {
             throw new ObjectNotFoundException("Usuário não encontrado");
         if(user.isPresent() && userByEmail.isPresent())
             if(user.get().getId() != userByEmail.get().getId())
-                throw new ServiceException("Usuário já cadastrado com o e-mail: " + userByEmail.get().getEmail());
+                throw new ServiceException(HttpStatus.CONFLICT, "Usuário já cadastrado com o e-mail: " + userByEmail.get().getEmail());
 
         User userFound;
         userFound = user.get();
@@ -142,7 +142,7 @@ public class UserService {
             return ResponseEntity.ok(new UserMessage("Nenhum usuário excluído"));
         else {
             if(user.get().getCart() != null)
-                throw new ServiceException("Não é possível excluir usuário com carrinho");
+                throw new ServiceException(HttpStatus.UNPROCESSABLE_ENTITY, "Não é possível excluir usuário com carrinho");
             else{
                 userRepository.deleteById(user.get().getId());
                 return ResponseEntity.ok(new UserMessage("Usuário excluído com sucesso"));

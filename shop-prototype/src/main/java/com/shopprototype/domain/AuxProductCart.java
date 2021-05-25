@@ -1,5 +1,7 @@
 package com.shopprototype.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
@@ -21,6 +23,7 @@ public class AuxProductCart implements Serializable {
     private Float price;
     private Integer quantity;
 
+    @JsonBackReference
     @ManyToOne
     private Cart cart;
 

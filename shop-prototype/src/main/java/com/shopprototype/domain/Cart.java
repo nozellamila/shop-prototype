@@ -1,5 +1,8 @@
 package com.shopprototype.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -28,6 +31,7 @@ public class Cart implements Serializable {
     @ManyToMany(mappedBy = "carts", cascade = CascadeType.ALL)
     private List<Product> products = new ArrayList<Product>();
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "cart", cascade = CascadeType.REMOVE)
     private List<AuxProductCart> auxProductCarts = new ArrayList<AuxProductCart>();
 

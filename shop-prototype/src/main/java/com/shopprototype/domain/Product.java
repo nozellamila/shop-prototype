@@ -1,6 +1,8 @@
 package com.shopprototype.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
@@ -26,7 +28,6 @@ public class Product implements Serializable {
     private String description;
     private Integer quantity;
 
-    @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "PRODUCT_CART",
             joinColumns = @JoinColumn(name = "product_id"),

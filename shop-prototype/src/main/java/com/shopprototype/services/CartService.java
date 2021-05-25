@@ -70,9 +70,6 @@ public class CartService {
     }
 
     public ResponseEntity<CartMessage> postCart(CartForm cartForm, UriComponentsBuilder builder) throws ServiceException {
-        //TODO: Carrinho é vinculado ao token de autorização, acrescentar.
-        //TODO: Validar se id e quantidade da lista de produtos são nulos, não permitir
-
         Cart cart = new Cart();
         List<Product> products = new ArrayList<>();
         List<AuxProductCart> auxProductCarts = new ArrayList<>();
@@ -116,15 +113,19 @@ public class CartService {
 
                 auxProductCartRepository.save(auxProductCartAux);
 
+                if(productId.getQuantity() <= 0) {
+                    throw new ServiceException(HttpStatus.UNPROCESSABLE_ENTITY, "Quantidade deve ser maior que zero");
+                }
 
-                if (productCart.get().getQuantity() >= productId.getQuantity()) {
+                if ((productCart.get().getQuantity() >= productId.getQuantity())) {
                     Integer productQuantity = productId.getQuantity();
                     cart.setTotalQuantity((cart.getTotalQuantity() + productQuantity));
                     cart.setTotalPrice(cart.getTotalPrice() + (productCart.get().getPrice()*productQuantity));
 
                     productCart.get().setQuantity((productCart.get().getQuantity() - productQuantity));
                     productRepository.save(productCart.get());
-                } else throw new ServiceException(HttpStatus.UNPROCESSABLE_ENTITY, "Não é possível cadastrar quantidade maior que a disponível");
+                }
+                else throw new ServiceException(HttpStatus.UNPROCESSABLE_ENTITY, "Não é possível cadastrar quantidade maior que a disponível");
             } else {
                 throw new ObjectNotFoundException("Produto não existe");
             }

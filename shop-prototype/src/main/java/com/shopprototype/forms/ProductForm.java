@@ -14,11 +14,11 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class ProductForm {
 
-    @NotBlank(message = "Nome não pode estar em branco")
+    @NotBlank(message = "Nome não pode estar em branco ou ser nulo")
     private String name;
-    @NotNull(message = "Preço não pode estar em branco")
+    @NotNull(message = "Preço não pode ser nulo")
     private Float price;
     private String description;
-    @NotNull
+    @NotNull(message = "Quantidade não pode ser nula")
     private Integer quantity;
 }

@@ -1,5 +1,6 @@
 package com.shopprototype.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
@@ -37,6 +38,7 @@ public class User implements Serializable, UserDetails {
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Role> role = new ArrayList<>();
 
+    @JsonBackReference
     @OneToOne(mappedBy = "user")
     private Cart cart;
 

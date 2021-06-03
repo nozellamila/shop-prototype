@@ -27,7 +27,7 @@ public class CartView {
 
 
     public CartView(Cart cart){
-        String dataPattern = "yyyy-MM-dd HH:mm:ss";
+        String dataPattern = "dd-MM-yyyy HH:mm:ss";
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(dataPattern);
         this.products = cart.getAuxProductCarts();
         this.totalPrice = cart.getTotalPrice();

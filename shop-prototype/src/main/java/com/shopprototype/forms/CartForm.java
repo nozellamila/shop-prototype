@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CartForm {
 
-    @NotNull
+    @NotNull(message = "Id do usuário não deve ser nulo ou vazio")
     private Integer userId;
     private List<ProductCartForm> products = new ArrayList<ProductCartForm>();
 }

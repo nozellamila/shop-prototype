@@ -61,8 +61,7 @@ public class CartService {
         Optional<Cart> cart = cartRepository.findById(id);
         
         if(cart.isPresent()){
-            Cart cart1 = cart.get();
-            return new ResponseEntity<CartView>(new CartView(cart1), HttpStatus.OK);
+            return new ResponseEntity<CartView>(new CartView(cart.get()), HttpStatus.OK);
         }
         else {
             throw new ObjectNotFoundException("Carrinho não encontrado");
@@ -88,17 +87,7 @@ public class CartService {
         }
 
         List<ProductCartForm> productsIds = cartForm.getProducts();
-/*
-        productsIds.forEach(productCartForm -> {
-            if(productCartForm.getProductId() == null || productCartForm.getQuantity() == null){
-                try {
-                    throw new ServiceException("Id do produto e/ou quantidade não devem ser vazios ou nulos");
-                } catch (ServiceException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-*/
+
         for (ProductCartForm productId : productsIds) {
             Optional<Product> productCart = productRepository.findById(productId.getProductId());
 

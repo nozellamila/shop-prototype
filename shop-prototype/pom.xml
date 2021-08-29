@@ -87,14 +87,6 @@
 			<version>2.3.0</version>
 		</dependency>
         <dependency>
-            <artifactId>lombok</artifactId>
-            <groupId>org.projectlombok</groupId>
-        </dependency>
-		<dependency>
-			<artifactId>lombok</artifactId>
-			<groupId>org.projectlombok</groupId>
-		</dependency>
-        <dependency>
             <groupId>net.minidev</groupId>
             <artifactId>json-smart</artifactId>
         </dependency>
@@ -103,6 +95,7 @@
     </dependencies>
 
 	<build>
+		<finalName>shop-prototype</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

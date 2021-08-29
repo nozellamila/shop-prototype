@@ -29,7 +29,7 @@ import java.util.Optional;
 public class UserService {
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
     RoleRepository roleRepository;
